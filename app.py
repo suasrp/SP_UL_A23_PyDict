@@ -71,11 +71,11 @@ def main():
 
     if 'current_word' in st.session_state:
         st.write(f"### Spell the word: {st.session_state.current_word}")
-
+        
         if st.button("Pronounce"):
             audio_file = app.generate_audio(st.session_state.current_word)
             st.audio(audio_file)
-        
+
         if st.button("Show Meaning"):
             meaning = app.show_meaning(st.session_state.current_word)
             st.write(f"Meaning: {meaning}")
