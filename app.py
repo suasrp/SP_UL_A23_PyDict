@@ -1,7 +1,7 @@
 import streamlit as st
 import random
 from gtts import gTTS
-import tempfile
+from io import BytesIO
 from PyDictionary import PyDictionary
 
 # List of words
@@ -29,11 +29,12 @@ class SpellingApp:
         self.score = 0
         self.results = []
 
-    def generate_audio(self, word):
+    def pronounce_word(self, word):
         tts = gTTS(text=word, lang='en')
-        with tempfile.NamedTemporaryFile(delete=True) as tmp:
-            tts.save(tmp.name)
-            return tmp.name
+        audio_file = BytesIO()
+        tts.save(audio_file)
+        audio_file.seek(0)  # Move to the beginning of the BytesIO buffer
+        return audio_file
 
     def show_meaning(self, word):
         meaning = self.dictionary.meaning(word)
@@ -73,9 +74,9 @@ def main():
         st.write(f"### Spell the word: {st.session_state.current_word}")
         
         if st.button("Pronounce"):
-            audio_file = app.generate_audio(st.session_state.current_word)
-            st.audio(audio_file)
-
+            audio_file = app.pronounce_word(st.session_state.current_word)
+            st.audio(audio_file, format='audio/mp3')
+        
         if st.button("Show Meaning"):
             meaning = app.show_meaning(st.session_state.current_word)
             st.write(f"Meaning: {meaning}")
